@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<article lang="">
+  <para>Document Converter</para>
+  <para>Convert to: PDF Text Convert <anchor id="downloadLink"/>Download Converted File </para>
+  <para>    const docInput = document.getElementById('docInput');
+    const convertBtn = document.getElementById('convertBtn');
+    const downloadLink = document.getElementById('downloadLink');
+    const formatSelect = document.getElementById('format');
+
+    let file;
+
+    docInput.addEventListener('change', (e) =&gt; {
+      file = e.target.files[0];
+      convertBtn.disabled = !file;
+    });
+
+    convertBtn.addEventListener('click', async () =&gt; {
+      const format = formatSelect.value;
+
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async function (e) {
+        const text = e.target.result;
+        let blob;
+        let filename = file.name.split('.')[0];
+
+        if (format === 'txt') {
+          blob = new Blob([text], { type: 'text/plain' });
+          downloadLink.download = `${filename}.txt`;
+        } else if (format === 'pdf') {
+          const { PDFDocument, rgb, StandardFonts } = await import('https://cdn.skypack.dev/pdf-lib');
+          const pdfDoc = await PDFDocument.create();
+          const page = pdfDoc.addPage([595, 842]);
+          const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+          const fontSize = 12;
+
+          const lines = text.split('\n');
+          let y = 800;
+          lines.forEach(line =&gt; {
+            if (y &lt; 40) return;
+            page.drawText(line, { x: 50, y: y, size: fontSize, font, color: rgb(0, 0, 0) });
+            y -= fontSize + 2;
+          });
+
+          const pdfBytes = await pdfDoc.save();
+          blob = new Blob([pdfBytes], { type: 'application/pdf' });
+          downloadLink.download = `${filename}.pdf`;
+        }
+
+        const url = URL.createObjectURL(blob);
+        downloadLink.href = url;
+        downloadLink.style.display = 'inline-block';
+      };
+
+      if (file.type.includes('text') || file.name.endsWith('.txt')) {
+        reader.readAsText(file);
+      } else {
+        alert('Only .txt files are currently supported for conversion.');
+      }
+    });
+  </para>
+</article>

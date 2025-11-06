@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<article lang="">
+  <para>GST Calculator</para>
+  <para>Calculate GST </para>
+  <sect1 id="result">
+    <para/>
+  </sect1>
+  <para>    function calculateGST() {
+      const amount = parseFloat(document.getElementById("amount").value);
+      const gstRate = parseFloat(document.getElementById("gstRate").value);
+
+      if (!amount || !gstRate || amount &lt; 0 || gstRate &lt; 0) {
+        document.getElementById("result").textContent = "Please enter valid values.";
+        return;
+      }
+
+      const gstAmount = (amount * gstRate) / 100;
+      const totalAmount = amount + gstAmount;
+
+      document.getElementById("result").innerHTML = `
+        GST Amount: ₹${gstAmount.toFixed(2)}&lt;br/&gt;
+        Total Amount (Incl. GST): ₹${totalAmount.toFixed(2)}
+      `;
+    }
+  </para>
+</article>

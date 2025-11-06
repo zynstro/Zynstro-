@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<article lang="">
+  <sect1>
+    <title>Ultimate Barcode Generator</title>
+    <para>Data to Encode: </para>
+    <sect1 id="dataFeedback">
+      <para/>
+    </sect1>
+    <para>Barcode Format: CODE128 (Alphanumeric) EAN-13 (12/13 digits, Retail) UPC (11/12 digits, US Retail) CODE39 (Basic Alphanumeric) ITF-14 (Shipping/Packaging) </para>
+    <para>Quiet Zone (px): Mandatory white space for scanning. </para>
+    <para>Height (px): </para>
+    <para>Bar Width (Ratio 1-5): </para>
+    <para>Text Font Size (px): </para>
+    <para>Text Font: Monospace (Default) Sans-serif Serif </para>
+    <para>Barcode Color: </para>
+    <para>Background Color: </para>
+    <para>✨ Generate Barcode </para>
+    <sect1 id="statusMessage">
+      <para/>
+    </sect1>
+    <sect1 id="outputArea">
+      <para/>
+      <sect2 id="barcodeOutput">
+        <para/>
+      </sect2>
+    </sect1>
+    <sect1 id="downloadGroup">
+      <para>⬇️ Download SVG (Vector) ⬇️ Download PNG (Raster) </para>
+    </sect1>
+    <para>        // --- DOM Elements ---
+        const D = id =&gt; document.getElementById(id);
+        const [textInput, formatSelect, heightInput, widthInput, quietZoneInput, fontSizeInput, fontSelect, 
+               generateBtn, downloadGroup, downloadSvgBtn, downloadPngBtn, barcodeOutput, statusMessage, 
+               lineColorInput, bgColorInput, lineColorHex, bgColorHex, dataFeedback] = 
+              [D("barcodeText"), D("formatSelect"), D("heightInput"), D("widthInput"), D("quietZoneInput"), D("fontSizeInput"), D("fontSelect"), 
+               D("generateBtn"), D("downloadGroup"), D("downloadSvgBtn"), D("downloadPngBtn"), D("barcodeOutput"), D("statusMessage"), 
+               D("lineColor"), D("bgColor"), D("lineColorHex"), D("bgColorHex"), D("dataFeedback")];
+
+        // --- Configuration &amp; Validation ---
+        const formatValidation = {
+            'EAN13': { min: 12, max: 13, chars: 'digits' },
+            'UPC': { min: 11, max: 12, chars: 'digits' },
+            'ITF14': { min: 13, max: 14, chars: 'digits' },
+            'CODE128': { min: 1, max: 80, chars: 'all' },
+            'CODE39': { min: 1, max: 43, chars: 'uppercase letters, digits, and specific symbols' }
+        };
+
+        // --- Event Listeners: Color Sync &amp; Validation ---
+        lineColorInput.addEventListener('input', () =&gt; lineColorHex.value = lineColorInput.value.toUpperCase());
+        bgColorInput.addEventListener('input', () =&gt; bgColorHex.value = bgColorInput.value.toUpperCase());
+        lineColorHex.addEventListener('input', () =&gt; lineColorInput.value = lineColorHex.value);
+        bgColorHex.addEventListener('input', () =&gt; bgColorInput.value = bgColorHex.value);
+        
+        textInput.addEventListener('input', validateData);
+        formatSelect.addEventListener('change', validateData);
+
+        function validateData() {
+            const text = textInput.value.trim();
+            const format = formatSelect.value;
+            const validation = formatValidation[format];
+            
+            if (!validation) return; 
+
+            const len = text.length;
+            let message = `Format: ${validation.chars}. `;
+            
+            if (len === 0) {
+                dataFeedback.textContent = message + `Enter data to encode.`;
+                dataFeedback.style.color = '#6c757d'; // Default color
+            } else if (len &lt; validation.min || len &gt; validation.max) {
+                dataFeedback.textContent = message + `Length: ${len}. Requires ${validation.min}${validation.min !== validation.max ? ' to ' + validation.max : ''} characters.`;
+                dataFeedback.style.color = '#dc3545'; // Error color
+            } else {
+                dataFeedback.textContent = message + `Length: ${len}. Looks valid.`;
+                dataFeedback.style.color = '#28a745'; // Success color
+            }
+        }
+        
+        // --- Core Generator Function ---
+        function generateBarcode() {
+            const text = textInput.value.trim();
+            const format = formatSelect.value;
+            const height = parseInt(heightInput.value);
+            const width = parseFloat(widthInput.value);
+            const quietZone = parseInt(quietZoneInput.value);
+            const fontSize = parseInt(fontSizeInput.value);
+            const font = fontSelect.value;
+            const lineColor = lineColorHex.value;
+            const bgColor = bgColorHex.value;
+
+            // Reset view
+            statusMessage.textContent = '';
+            downloadGroup.style.display = 'none';
+            barcodeOutput.innerHTML = ''; // Clear previous output
+
+            if (text === "") {
+                statusMessage.textContent = "❌ Please enter data to encode.";
+                return;
+            }
+
+            // Simple validation check before attempting generation
+            const validation = formatValidation[format];
+            if (text.length &lt; validation.min || text.length &gt; validation.max) {
+                 statusMessage.textContent = `❌ Cannot generate. Data must be between ${validation.min} and ${validation.max} characters for ${format}.`;
+                 return;
+            }
+
+            try {
+                // We use an SVG element inside the output div
+                const svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                barcodeOutput.appendChild(svgElement);
+
+                JsBarcode(svgElement, text, {
+                    format: format,
+                    lineColor: lineColor,
+                    background: bgColor,
+                    width: width,
+                    height: height,
+                    displayValue: true, // Always show text
+                    text: text, // Use the input text as the display value
+                    textMargin: 5,
+                    fontSize: fontSize, // Custom font size
+                    font: font, // Custom font family
+                    margin: quietZone // Quiet zone adjustment
+                });
+
+                statusMessage.textContent = "✅ Barcode generated successfully! Ready for download.";
+                downloadGroup.style.display = 'flex';
+
+            } catch (e) {
+                console.error("Barcode generation failed:", e);
+                statusMessage.textContent = `❌ Error: Generation failed. Ensure data is compatible with the selected ${format} standard.`;
+            }
+        }
+        
+        // --- Download Functions ---
+
+        // Helper to get the generated SVG string
+        function getSvgString() {
+            const svg = barcodeOutput.querySelector('svg');
+            const serializer = new XMLSerializer();
+            return serializer.serializeToString(svg);
+        }
+
+        // Download SVG (Vector)
+        function downloadSvg() {
+            const svgString = getSvgString();
+            const data = textInput.value.trim() || 'barcode';
+            
+            const blob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `${formatSelect.value.toLowerCase()}_${data.substring(0, 15)}.svg`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Download PNG (Raster)
+        function downloadPng() {
+            const svgString = getSvgString();
+            const data = textInput.value.trim() || 'barcode';
+            const img = new Image();
+            
+            // Convert SVG to data URL
+            const svgDataUrl = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgString)));
+
+            img.onload = () =&gt; {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0); 
+                
+                const imageDataURL = canvas.toDataURL("image/png");
+                
+                const link = document.createElement("a");
+                link.href = imageDataURL;
+                link.download = `${formatSelect.value.toLowerCase()}_${data.substring(0, 15)}.png`;
+                link.click();
+            };
+            img.src = svgDataUrl;
+        }
+
+        // --- Initialize ---
+        generateBtn.addEventListener('click', generateBarcode);
+        downloadSvgBtn.addEventListener('click', downloadSvg);
+        downloadPngBtn.addEventListener('click', downloadPng);
+        document.addEventListener('DOMContentLoaded', validateData); // Run validation on load
+    </para>
+  </sect1>
+</article>

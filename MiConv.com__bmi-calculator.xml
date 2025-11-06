@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<article lang="">
+  <para>BMI Calculator</para>
+  <para>Calculate BMI </para>
+  <sect1 id="result">
+    <para/>
+  </sect1>
+  <para>    function calculateBMI() {
+      const weight = parseFloat(document.getElementById("weight").value);
+      const height = parseFloat(document.getElementById("height").value);
+
+      if (!weight || !height || weight &lt;= 0 || height &lt;= 0) {
+        document.getElementById("result").textContent = "Please enter valid numbers.";
+        return;
+      }
+
+      const heightInMeters = height / 100;
+      const bmi = weight / (heightInMeters * heightInMeters);
+      const roundedBMI = bmi.toFixed(1);
+
+      let category = "";
+
+      if (bmi &lt; 18.5) category = "Underweight";
+      else if (bmi &lt; 24.9) category = "Normal weight";
+      else if (bmi &lt; 29.9) category = "Overweight";
+      else category = "Obesity";
+
+      document.getElementById("result").textContent = `Your BMI is ${roundedBMI} (${category})`;
+    }
+  </para>
+</article>

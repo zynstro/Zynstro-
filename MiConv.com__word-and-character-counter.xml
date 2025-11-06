@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<article lang="">
+  <para>🌙 </para>
+  <sect1>
+    <title>✨ Advanced Word &amp; Character Counter</title>
+    <para>📋 Copy 🗑️ Clear </para>
+    <sect1 id="output">
+      <para>Words: <anchor id="wordCount"/>0</para>
+      <para>Characters: <anchor id="charCount"/>0</para>
+      <para>Sentences: <anchor id="sentenceCount"/>0</para>
+    </sect1>
+    <para>    const textBox = document.getElementById("textBox");
+    const wordCount = document.getElementById("wordCount");
+    const charCount = document.getElementById("charCount");
+    const sentenceCount = document.getElementById("sentenceCount");
+
+    textBox.addEventListener("input", countText);
+
+    function countText() {
+      const text = textBox.value.trim();
+      const words = text.split(/\s+/).filter(Boolean);
+      const characters = text.replace(/\s/g, '').length;
+      const sentences = text.split(/[.!?]+/).filter(Boolean);
+
+      wordCount.textContent = words.length;
+      charCount.textContent = characters;
+      sentenceCount.textContent = sentences.length;
+    }
+
+    function copyText() {
+      navigator.clipboard.writeText(textBox.value);
+      alert("Text copied to clipboard!");
+    }
+
+    function clearText() {
+      textBox.value = "";
+      countText();
+    }
+
+    function toggleMode() {
+      document.body.classList.toggle("dark");
+      const btn = document.querySelector(".toggle-mode");
+      btn.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
+    }
+  </para>
+  </sect1>
+</article>

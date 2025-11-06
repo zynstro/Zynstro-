@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<article lang="">
+  <para>🌙 </para>
+  <sect1>
+    <title>🌎 World Clock &amp; Time Zone Converter</title>
+    <para>Convert time instantly between any two cities with live preview and world map glow.</para>
+    <para>From Time Zone </para>
+    <sect1 id="fromClock">
+      <para/>
+    </sect1>
+    <para>To Time Zone </para>
+    <sect1 id="toClock">
+      <para/>
+    </sect1>
+    <para>Convert Now </para>
+    <sect1 id="outputResult">
+      <para/>
+    </sect1>
+    <para>    const fromZone = document.getElementById("fromZone");
+    const toZone = document.getElementById("toZone");
+    const fromClock = document.getElementById("fromClock");
+    const toClock = document.getElementById("toClock");
+    const fromGlow = document.getElementById("fromGlow");
+    const toGlow = document.getElementById("toGlow");
+    const themeToggle = document.getElementById("themeToggle");
+
+    const cities = [
+      { name: "Karachi, Pakistan", zone: "Asia/Karachi", x: 600, y: 100 },
+      { name: "Islamabad, Pakistan", zone: "Asia/Karachi", x: 590, y: 95 },
+      { name: "London, UK", zone: "Europe/London", x: 400, y: 70 },
+      { name: "New York, USA", zone: "America/New_York", x: 230, y: 100 },
+      { name: "Tokyo, Japan", zone: "Asia/Tokyo", x: 830, y: 110 },
+      { name: "Dubai, UAE", zone: "Asia/Dubai", x: 520, y: 110 },
+      { name: "Sydney, Australia", zone: "Australia/Sydney", x: 880, y: 200 },
+      { name: "Toronto, Canada", zone: "America/Toronto", x: 240, y: 90 },
+      { name: "Paris, France", zone: "Europe/Paris", x: 430, y: 80 },
+      { name: "Beijing, China", zone: "Asia/Shanghai", x: 720, y: 95 }
+    ];
+
+    // Populate city dropdowns
+    cities.forEach(city =&gt; {
+      const opt1 = document.createElement("option");
+      const opt2 = document.createElement("option");
+      opt1.value = opt2.value = city.zone;
+      opt1.textContent = "⭐ " + city.name;
+      opt2.textContent = "⭐ " + city.name;
+      fromZone.appendChild(opt1);
+      toZone.appendChild(opt2);
+    });
+
+    fromZone.value = "Asia/Karachi";
+    toZone.value = "Europe/London";
+
+    function updateClock() {
+      const now = new Date();
+      fromClock.textContent = "Local Time: " + now.toLocaleTimeString("en-US", { timeZone: fromZone.value });
+      toClock.textContent = "Local Time: " + now.toLocaleTimeString("en-US", { timeZone: toZone.value });
+      requestAnimationFrame(updateClock);
+    }
+    updateClock();
+
+    function convertTime() {
+      const dateInput = document.getElementById("dateInput").value;
+      const output = document.getElementById("outputResult");
+
+      if (!dateInput) {
+        output.textContent = "⚠️ Please select a date and time.";
+        return;
+      }
+
+      const from = fromZone.value;
+      const to = toZone.value;
+      const date = new Date(dateInput);
+      const sourceTime = new Date(date.toLocaleString("en-US", { timeZone: from }));
+      const convertedTime = new Date(sourceTime.toLocaleString("en-US", { timeZone: to }));
+
+      output.textContent = `🕒 ${convertedTime.toLocaleString()} (${to})`;
+      moveGlow(from, to);
+    }
+
+    // Move glowing dots on world map
+    function moveGlow(from, to) {
+      const fromCity = cities.find(c =&gt; c.zone === from);
+      const toCity = cities.find(c =&gt; c.zone === to);
+
+      if (fromCity) {
+        fromGlow.style.left = fromCity.x + "px";
+        fromGlow.style.top = fromCity.y + "px";
+      }
+      if (toCity) {
+        toGlow.style.left = toCity.x + "px";
+        toGlow.style.top = toCity.y + "px";
+      }
+    }
+
+    // Theme switch
+    themeToggle.addEventListener("click", () =&gt; {
+      document.body.classList.toggle("dark");
+      themeToggle.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
+    });
+  </para>
+  </sect1>
+</article>

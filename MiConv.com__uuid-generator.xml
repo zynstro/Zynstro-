@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<article lang="">
+  <para>🔮 Ultimate UUID Generator</para>
+  <para>Type: UUID v4 Uppercase Short ID Count: Auto Refresh (s): </para>
+  <para>Generate Copy All Export .txt 🌓 Theme </para>
+  <sect1 id="uuidList">
+    <para>Press "Generate" to begin...</para>
+  </sect1>
+  <sect1 id="toast">
+    <para>Copied!</para>
+  </sect1>
+  <para>  const uuidList = document.getElementById("uuidList");
+  const toast = document.getElementById("toast");
+  const typeSelect = document.getElementById("uuidType");
+  const countInput = document.getElementById("uuidCount");
+  const refreshInput = document.getElementById("autoRefresh");
+
+  let refreshInterval = null;
+
+  function generateUUIDs() {
+    const type = typeSelect.value;
+    const count = Math.min(Math.max(parseInt(countInput.value) || 1, 1), 50);
+    const uuids = [];
+
+    for (let i = 0; i &lt; count; i++) {
+      let uuid = crypto.randomUUID ? crypto.randomUUID() : manualUUID();
+      if (type === "upper") uuid = uuid.toUpperCase();
+      if (type === "short") uuid = Math.random().toString(36).substring(2, 10).toUpperCase();
+      uuids.push(uuid);
+    }
+
+    uuidList.innerHTML = uuids.map(u =&gt; `&lt;div&gt;${u}&lt;/div&gt;`).join("");
+
+    handleAutoRefresh();
+  }
+
+  function manualUUID() {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, c =&gt; {
+      const r = Math.random() * 16 | 0;
+      const v = c === "x" ? r : (r &amp; 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
+
+  async function copyAll() {
+    const text = Array.from(uuidList.children).map(el =&gt; el.textContent).join("\n");
+    if (!text || text.startsWith("Press")) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast("✅ All UUIDs copied!");
+    } catch {
+      showToast("❌ Copy failed!");
+    }
+  }
+
+  function exportToFile() {
+    const text = Array.from(uuidList.children).map(el =&gt; el.textContent).join("\n");
+    if (!text || text.startsWith("Press")) return;
+    const blob = new Blob([text], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `uuids_${new Date().toISOString().slice(0, 19).replace(/:/g, "-")}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast("💾 Exported as .txt!");
+  }
+
+  function handleAutoRefresh() {
+    clearInterval(refreshInterval);
+    const seconds = parseInt(refreshInput.value);
+    if (seconds &gt; 0) {
+      refreshInterval = setInterval(generateUUIDs, seconds * 1000);
+    }
+  }
+
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add("show");
+    setTimeout(() =&gt; toast.classList.remove("show"), 2000);
+  }
+
+  function toggleTheme() {
+    const isDark = document.body.getAttribute("data-theme") === "dark";
+    document.body.setAttribute("data-theme", isDark ? "light" : "dark");
+    localStorage.setItem("theme", isDark ? "light" : "dark");
+  }
+
+  // Load saved theme
+  const savedTheme = localStorage.getItem("theme") || "light";
+  document.body.setAttribute("data-theme", savedTheme);</para>
+</article>

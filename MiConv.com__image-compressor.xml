@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<article lang="">
+  <para>Image Compressor</para>
+  <sect1 id="previewContainer">
+    <para/>
+  </sect1>
+  <para>Compress &amp; Download </para>
+  <para>    const upload = document.getElementById('upload');
+    const preview = document.getElementById('preview');
+    const compressBtn = document.getElementById('compressBtn');
+
+    upload.addEventListener('change', (e) =&gt; {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (event) {
+          preview.src = event.target.result;
+          preview.style.display = 'block';
+          compressBtn.style.display = 'inline-block';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    compressBtn.addEventListener('click', () =&gt; {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      img.src = preview.src;
+
+      img.onload = () =&gt; {
+        const scale = 0.5; // Compress to 50% size
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        canvas.toBlob((blob) =&gt; {
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = 'compressed-image.jpg';
+          link.click();
+        }, 'image/jpeg', 0.7); // JPEG format with 70% quality
+      };
+    });
+  </para>
+</article>

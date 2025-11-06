@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<article lang="">
+  <para>Image Resizer</para>
+  <para>Resize Image <anchor id="downloadLink"/>Download Resized Image </para>
+  <para>    let originalImage = new Image();
+
+    document.getElementById('upload').addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        originalImage.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function resizeImage() {
+      const width = parseInt(document.getElementById('width').value);
+      const height = parseInt(document.getElementById('height').value);
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d');
+
+      if (!width || !height || isNaN(width) || isNaN(height)) {
+        alert("Please enter valid width and height.");
+        return;
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(originalImage, 0, 0, width, height);
+
+      const downloadLink = document.getElementById('downloadLink');
+      downloadLink.href = canvas.toDataURL();
+      downloadLink.style.display = 'block';
+      downloadLink.textContent = 'Download Resized Image';
+    }
+  </para>
+</article>

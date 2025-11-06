@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<article lang="">
+  <para>Image to Text</para>
+  <para>Upload Image </para>
+  <sect1 id="output">
+    <para/>
+  </sect1>
+  <para>Copy Text </para>
+  <para>    const imageInput = document.getElementById('imageInput');
+    const output = document.getElementById('output');
+    const copyBtn = document.querySelector('.copy-btn');
+
+    imageInput.addEventListener('change', async () =&gt; {
+      if (imageInput.files.length === 0) return;
+
+      const file = imageInput.files[0];
+      const reader = new FileReader();
+
+      reader.onload = async () =&gt; {
+        output.style.display = 'block';
+        output.textContent = 'Processing...';
+
+        try {
+          const result = await Tesseract.recognize(reader.result, 'eng');
+          output.textContent = result.data.text;
+          copyBtn.style.display = 'inline-block';
+        } catch (err) {
+          output.textContent = 'Error processing image.';
+          console.error(err);
+        }
+      };
+
+      reader.readAsDataURL(file);
+    });
+
+    function copyText() {
+      const text = output.textContent;
+      navigator.clipboard.writeText(text).then(() =&gt; {
+        alert('Text copied to clipboard!');
+      });
+    }
+  </para>
+</article>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<article lang="">
+  <para>Image Converter Tool</para>
+  <para>PNG JPG GIF WebP Convert Image </para>
+  <sect1 id="previewContainer">
+    <para/>
+  </sect1>
+  <para>    let originalFile;
+
+    document.getElementById('imageInput').addEventListener('change', function(e) {
+      originalFile = e.target.files[0];
+      const previewContainer = document.getElementById('previewContainer');
+      previewContainer.innerHTML = '&lt;p&gt;Original Preview:&lt;/p&gt;' + '&lt;img src="' + URL.createObjectURL(originalFile) + '" alt="Original Image"&gt;';
+    });
+
+    function convertImage() {
+      if (!originalFile) return alert("Please upload an image first.");
+
+      const format = document.getElementById("formatSelect").value;
+      const reader = new FileReader();
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      const img = new Image();
+
+      reader.onload = function(event) {
+        img.onload = function() {
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx.drawImage(img, 0, 0);
+
+          canvas.toBlob(function(blob) {
+            const convertedUrl = URL.createObjectURL(blob);
+            const previewContainer = document.getElementById("previewContainer");
+            previewContainer.innerHTML += '&lt;p&gt;Converted Preview:&lt;/p&gt;' +
+              '&lt;img src="' + convertedUrl + '" alt="Converted Image"&gt;' +
+              '&lt;a class="download-btn" href="' + convertedUrl + '" download="converted-image.' + format + '"&gt;Download Converted Image&lt;/a&gt;';
+          }, 'image/' + format);
+        };
+        img.src = event.target.result;
+      };
+
+      reader.readAsDataURL(originalFile);
+    }
+  </para>
+</article>

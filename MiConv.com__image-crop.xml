@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<article lang="">
+  <para>Image Cropper</para>
+  <para>1:1 (Square) 16:9 4:3 3:2 21:9 Apply Aspect Ratio <anchor id="downloadLink"/>Download Cropped Image </para>
+  <para>    let originalImage = new Image();
+
+    document.getElementById('upload').addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        originalImage.src = e.target.result;
+        originalImage.onload = () =&gt; resizeImage();
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function resizeImage() {
+      const aspectValue = document.getElementById('aspectRatio').value;
+      const aspectRatio = eval(aspectValue);
+
+      const originalWidth = originalImage.width;
+      const originalHeight = originalImage.height;
+
+      let newWidth = originalWidth;
+      let newHeight = Math.round(newWidth / aspectRatio);
+
+      if (newHeight &gt; originalHeight) {
+        newHeight = originalHeight;
+        newWidth = Math.round(newHeight * aspectRatio);
+      }
+
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d');
+
+      canvas.width = newWidth;
+      canvas.height = newHeight;
+
+      ctx.clearRect(0, 0, newWidth, newHeight);
+      ctx.drawImage(originalImage, 0, 0, newWidth, newHeight);
+
+      const downloadLink = document.getElementById('downloadLink');
+      downloadLink.href = canvas.toDataURL();
+      downloadLink.style.display = 'block';
+      downloadLink.textContent = 'Download Cropped Image';
+    }
+  </para>
+</article>

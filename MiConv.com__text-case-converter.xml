@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<article lang="">
+  <para>💡 Pro Text Case Converter</para>
+  <para>UPPERCASE lowercase Sentence case Title Case aLtErNaTiNg Copy Paste Download 🌗 Mode Clear </para>
+  <sect1 id="counter">
+    <para>Words: 0 | Characters: 0 | Detected: Normal Text</para>
+  </sect1>
+  <sect1 id="preview">
+    <para>Live preview will appear here...</para>
+  </sect1>
+  <sect1 id="toast">
+    <para/>
+  </sect1>
+  <para>  const textArea = document.getElementById("inputArea");
+  const preview = document.getElementById("preview");
+  const counter = document.getElementById("counter");
+  const toast = document.getElementById("toast");
+
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add("show");
+    setTimeout(() =&gt; toast.classList.remove("show"), 2000);
+  }
+
+  function updateStats() {
+    const text = textArea.value.trim();
+    const words = text ? text.split(/\s+/).length : 0;
+    const chars = text.length;
+    const detected = detectCase(text);
+    counter.textContent = `Words: ${words} | Characters: ${chars} | Detected: ${detected}`;
+    preview.textContent = text || "Live preview will appear here...";
+    detectDirection(text);
+  }
+
+  function detectCase(t) {
+    if (!t) return "Normal Text";
+    if (t === t.toUpperCase()) return "UPPERCASE";
+    if (t === t.toLowerCase()) return "lowercase";
+    if (t[0] === t[0].toUpperCase()) return "Sentence case";
+    return "Mixed case";
+  }
+
+  function detectDirection(t) {
+    const rtl = /[\u0600-\u06FF\u0750-\u077F]/.test(t);
+    textArea.style.direction = rtl ? "rtl" : "ltr";
+  }
+
+  function convert(type) {
+    let text = textArea.value;
+    switch (type) {
+      case "upper": text = text.toUpperCase(); break;
+      case "lower": text = text.toLowerCase(); break;
+      case "sentence":
+        text = text.toLowerCase().replace(/(^\s*\w|[\.\!\?]\s*\w)/g, c =&gt; c.toUpperCase());
+        break;
+      case "title":
+        text = text.toLowerCase().split(' ').map(w =&gt; w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        break;
+      case "alt":
+        text = [...text].map((ch, i) =&gt; i % 2 ? ch.toLowerCase() : ch.toUpperCase()).join('');
+        break;
+    }
+    textArea.value = text;
+    updateStats();
+    showToast(`Converted to ${type} case!`);
+  }
+
+  function copyText() {
+    navigator.clipboard.writeText(textArea.value);
+    showToast("Text copied!");
+  }
+
+  function pasteText() {
+    navigator.clipboard.readText().then(txt =&gt; {
+      textArea.value = txt;
+      updateStats();
+      showToast("Text pasted!");
+    });
+  }
+
+  function downloadText() {
+    const blob = new Blob([textArea.value], { type: "text/plain" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "converted_text.txt";
+    a.click();
+    showToast("File downloaded!");
+  }
+
+  function clearText() {
+    textArea.value = "";
+    updateStats();
+    showToast("Cleared!");
+  }
+
+  function toggleMode() {
+    document.body.classList.toggle("dark");
+  }
+
+  textArea.addEventListener("input", updateStats);
+  updateStats();</para>
+</article>

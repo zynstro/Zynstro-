@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<article lang="">
+  <para>💠 Pro JSON Formatter &amp; Validator</para>
+  <para>Format &amp; Validate Minify Copy Download Clear </para>
+  <sect1 id="error">
+    <para/>
+  </sect1>
+  <sect1 id="success">
+    <para/>
+  </sect1>
+  <para><anchor id="output"/>    const input = document.getElementById("input");
+    const output = document.getElementById("output");
+    const error = document.getElementById("error");
+    const success = document.getElementById("success");
+
+    document.getElementById("themeToggle").addEventListener("change", e =&gt; {
+      document.body.classList.toggle("dark", e.target.checked);
+    });
+
+    // Highlight JSON syntax
+    function syntaxHighlight(json) {
+      if (typeof json != "string") {
+        json = JSON.stringify(json, undefined, 2);
+      }
+      json = json.replace(/&amp;/g, "&amp;amp;").replace(/&lt;/g, "&amp;lt;").replace(/&gt;/g, "&amp;gt;");
+      return json.replace(
+        /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+        function (match) {
+          let cls = "number";
+          if (/^"/.test(match)) {
+            cls = /:$/.test(match) ? "key" : "string";
+          } else if (/true|false/.test(match)) {
+            cls = "boolean";
+          } else if (/null/.test(match)) {
+            cls = "null";
+          }
+          return '&lt;span class="' + cls + '"&gt;' + match + "&lt;/span&gt;";
+        }
+      );
+    }
+
+    function formatJSON() {
+      error.textContent = "";
+      success.textContent = "";
+      output.innerHTML = "";
+      const text = input.value.trim();
+
+      if (!text) {
+        error.textContent = "⚠️ Please paste your JSON first.";
+        return;
+      }
+
+      try {
+        const obj = JSON.parse(text);
+        const formatted = JSON.stringify(obj, null, 2);
+        output.innerHTML = syntaxHighlight(formatted);
+        success.textContent = "✅ Valid JSON!";
+      } catch (e) {
+        error.textContent = "❌ Invalid JSON: " + e.message;
+      }
+    }
+
+    function minifyJSON() {
+      try {
+        const obj = JSON.parse(input.value);
+        output.textContent = JSON.stringify(obj);
+        success.textContent = "✅ Minified successfully!";
+      } catch (e) {
+        error.textContent = "❌ Invalid JSON.";
+      }
+    }
+
+    function copyJSON() {
+      const text = output.innerText;
+      if (!text) {
+        error.textContent = "⚠️ Nothing to copy!";
+        return;
+      }
+      navigator.clipboard.writeText(text);
+      success.textContent = "📋 Copied to clipboard!";
+    }
+
+    function downloadJSON() {
+      const text = output.innerText;
+      if (!text) {
+        error.textContent = "⚠️ Format JSON first!";
+        return;
+      }
+      const blob = new Blob([text], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "formatted.json";
+      a.click();
+    }
+
+    function clearAll() {
+      input.value = "";
+      output.innerText = "";
+      error.textContent = "";
+      success.textContent = "";
+    }
+
+    function uploadJSON(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (event) {
+        input.value = event.target.result;
+        formatJSON();
+      };
+      reader.readAsText(file);
+    }
+
+    // Auto-validation while typing
+    input.addEventListener("input", () =&gt; {
+      try {
+        JSON.parse(input.value);
+        input.style.border = "2px solid var(--success)";
+      } catch {
+        input.style.border = "2px solid var(--error)";
+      }
+    });
+  </para>
+</article>

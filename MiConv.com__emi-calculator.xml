@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<article lang="">
+  <para>Loan EMI Calculator</para>
+  <para>Calculate EMI </para>
+  <sect1 id="result">
+    <para/>
+  </sect1>
+  <para>    function calculateEMI() {
+      const loanAmount = parseFloat(document.getElementById("loanAmount").value);
+      const annualInterestRate = parseFloat(document.getElementById("interestRate").value);
+      const tenure = parseInt(document.getElementById("loanTenure").value);
+
+      if (!loanAmount || !annualInterestRate || !tenure || loanAmount &lt;= 0 || annualInterestRate &lt;= 0 || tenure &lt;= 0) {
+        document.getElementById("result").textContent = "Please enter valid inputs.";
+        return;
+      }
+
+      const monthlyInterestRate = annualInterestRate / 12 / 100;
+      const emi = (loanAmount * monthlyInterestRate * Math.pow(1 + monthlyInterestRate, tenure)) /
+                  (Math.pow(1 + monthlyInterestRate, tenure) - 1);
+
+      const totalPayment = emi * tenure;
+      const totalInterest = totalPayment - loanAmount;
+
+      document.getElementById("result").innerHTML = `
+        Monthly EMI: ₹${emi.toFixed(2)}&lt;br/&gt;
+        Total Interest: ₹${totalInterest.toFixed(2)}&lt;br/&gt;
+        Total Payment: ₹${totalPayment.toFixed(2)}
+      `;
+    }
+  </para>
+</article>

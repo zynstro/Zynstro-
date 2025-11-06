@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<article lang="">
+  <para>PDF Lock Tool</para>
+  <para>Set Password: Lock PDF </para>
+  <sect1 id="status">
+    <para/>
+  </sect1>
+  <para><anchor id="downloadLink"/>Download Locked PDF </para>
+  <para>    const pdfInput = document.getElementById('pdfInput');
+    const lockBtn = document.getElementById('lockBtn');
+    const downloadLink = document.getElementById('downloadLink');
+    const passwordInput = document.getElementById('password');
+    const status = document.getElementById('status');
+
+    let pdfFile;
+
+    pdfInput.addEventListener('change', (e) =&gt; {
+      pdfFile = e.target.files[0];
+      lockBtn.disabled = !pdfFile;
+    });
+
+    lockBtn.addEventListener('click', async () =&gt; {
+      if (!pdfFile) return;
+      const password = passwordInput.value;
+      if (!password) {
+        alert('Please enter a password to lock the PDF.');
+        return;
+      }
+
+      status.textContent = 'Processing...';
+
+      const reader = new FileReader();
+      reader.onload = async function (e) {
+        try {
+          const existingPdfBytes = e.target.result;
+
+          // Simulate encryption as pdf-lib doesn't support it natively
+          const blob = new Blob([existingPdfBytes], { type: 'application/pdf' });
+          const filename = pdfFile.name.replace(/\.pdf$/i, '') + '_locked_simulated.pdf';
+
+          const url = URL.createObjectURL(blob);
+
+          downloadLink.href = url;
+          downloadLink.download = filename;
+          downloadLink.style.display = 'inline-block';
+          status.textContent = 'PDF is ready (Note: Lock is simulated in frontend).';
+        } catch (err) {
+          console.error(err);
+          status.textContent = 'Failed to process PDF.';
+        }
+      };
+
+      reader.readAsArrayBuffer(pdfFile);
+    });
+  </para>
+</article>

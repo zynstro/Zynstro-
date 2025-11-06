@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<article lang="">
+  <sect1>
+    <title>Premium World Clock Dashboard</title>
+    <para>Select Date &amp; Time (Optional) </para>
+    <para>From City From Time Zone </para>
+    <para>To City To Time Zone </para>
+    <para>Convert </para>
+    <sect1 id="outputResult">
+      <para/>
+    </sect1>
+    <para>Copy Result </para>
+    <para>Toggle Dark Mode</para>
+    <para>Sort by City Sort by Time </para>
+    <sect1 id="dashboard">
+      <para/>
+    </sect1>
+    <para>const cities = [
+  {name: "New York", zone: "America/New_York", flag:"🇺🇸"},
+  {name: "London", zone: "Europe/London", flag:"🇬🇧"},
+  {name: "Tokyo", zone: "Asia/Tokyo", flag:"🇯🇵"},
+  {name: "Sydney", zone: "Australia/Sydney", flag:"🇦🇺"},
+  {name: "Paris", zone: "Europe/Paris", flag:"🇫🇷"},
+  {name: "Dubai", zone: "Asia/Dubai", flag:"🇦🇪"},
+  {name: "Mumbai", zone: "Asia/Kolkata", flag:"🇮🇳"},
+  {name: "Los Angeles", zone: "America/Los_Angeles", flag:"🇺🇸"},
+  {name: "Moscow", zone: "Europe/Moscow", flag:"🇷🇺"},
+  {name: "Beijing", zone: "Asia/Shanghai", flag:"🇨🇳"},
+  {name: "Karachi", zone: "Asia/Karachi", flag:"🇵🇰"},
+  {name: "Islamabad", zone: "Asia/Karachi", flag:"🇵🇰"},
+  {name: "Singapore", zone: "Asia/Singapore", flag:"🇸🇬"},
+  {name: "Berlin", zone: "Europe/Berlin", flag:"🇩🇪"},
+  {name: "Rome", zone: "Europe/Rome", flag:"🇮🇹"},
+  {name: "Toronto", zone: "America/Toronto", flag:"🇨🇦"},
+  {name: "Bangkok", zone: "Asia/Bangkok", flag:"🇹🇭"},
+  {name: "Seoul", zone: "Asia/Seoul", flag:"🇰🇷"},
+  {name: "Honolulu", zone: "Pacific/Honolulu", flag:"🇺🇸"},
+  {name: "Mexico City", zone: "America/Mexico_City", flag:"🇲🇽"},
+  {name: "Istanbul", zone: "Europe/Istanbul", flag:"🇹🇷"},
+  {name: "Johannesburg", zone: "Africa/Johannesburg", flag:"🇿🇦"},
+  {name: "Lagos", zone: "Africa/Lagos", flag:"🇳🇬"},
+  {name: "Cairo", zone: "Africa/Cairo", flag:"🇪🇬"},
+  {name: "Buenos Aires", zone: "America/Argentina/Buenos_Aires", flag:"🇦🇷"},
+  {name: "Sao Paulo", zone: "America/Sao_Paulo", flag:"🇧🇷"},
+  {name: "Karachi", zone: "Asia/Karachi", flag:"🇵🇰"},
+  {name: "Islamabad", zone: "Asia/Karachi", flag:"🇵🇰"},
+  {name: "Jakarta", zone: "Asia/Jakarta", flag:"🇮🇩"},
+  {name: "Manila", zone: "Asia/Manila", flag:"🇵🇭"},
+  {name: "Helsinki", zone: "Europe/Helsinki", flag:"🇫🇮"},
+  {name: "Stockholm", zone: "Europe/Stockholm", flag:"🇸🇪"},
+  {name: "Oslo", zone: "Europe/Oslo", flag:"🇳🇴"},
+  {name: "Lisbon", zone: "Europe/Lisbon", flag:"🇵🇹"},
+  {name: "Madrid", zone: "Europe/Madrid", flag:"🇪🇸"},
+  {name: "Athens", zone: "Europe/Athens", flag:"🇬🇷"},
+  {name: "Kuala Lumpur", zone: "Asia/Kuala_Lumpur", flag:"🇲🇾"},
+  {name: "Bangkok", zone: "Asia/Bangkok", flag:"🇹🇭"},
+  {name: "Hanoi", zone: "Asia/Ho_Chi_Minh", flag:"🇻🇳"},
+  {name: "Karachi", zone: "Asia/Karachi", flag:"🇵🇰"},
+  {name: "Islamabad", zone: "Asia/Karachi", flag:"🇵🇰"}
+];
+
+const timeZones = Intl.supportedValuesOf("timeZone");
+
+const fromCity = document.getElementById("fromCity");
+const toCity = document.getElementById("toCity");
+const fromZone = document.getElementById("fromZone");
+const toZone = document.getElementById("toZone");
+const dashboard = document.getElementById("dashboard");
+
+function populateCities() {
+  cities.forEach(city =&gt; {
+    const opt1 = document.createElement("option");
+    opt1.value = city.zone; opt1.textContent = city.name;
+    fromCity.appendChild(opt1);
+
+    const opt2 = document.createElement("option");
+    opt2.value = city.zone; opt2.textContent = city.name;
+    toCity.appendChild(opt2);
+  });
+}
+
+function populateTimeZones() {
+  timeZones.forEach(zone =&gt; {
+    const opt1 = document.createElement("option");
+    const opt2 = document.createElement("option");
+    opt1.value = opt2.value = zone;
+    opt1.textContent = zone;
+    opt2.textContent = zone;
+    fromZone.appendChild(opt1);
+    toZone.appendChild(opt2);
+  });
+}
+
+fromCity.addEventListener("change", ()=&gt; fromZone.value = fromCity.value);
+toCity.addEventListener("change", ()=&gt; toZone.value = toCity.value);
+
+populateCities();
+populateTimeZones();
+fromCity.value = fromZone.value = Intl.DateTimeFormat().resolvedOptions().timeZone;
+toCity.value = toZone.value = "UTC";
+
+function convertTime() {
+  const dateInput = document.getElementById("dateInput").value;
+  const from = fromZone.value; const to = toZone.value;
+  const resultBox = document.getElementById("outputResult");
+  if(!dateInput){ resultBox.textContent = "⚠️ Select a date or see the live clocks below."; return; }
+  try {
+    const date = new Date(dateInput);
+    const fromTime = new Date(date.toLocaleString("en-US",{timeZone:from}));
+    const targetTime = new Date(fromTime.toLocaleString("en-US",{timeZone:to}));
+    resultBox.textContent = `🕒 ${from} → ${to}: ${targetTime.toLocaleString()}`;
+  } catch(e){ resultBox.textContent = "❌ Error converting time."; }
+}
+
+function copyResult() {
+  const text = document.getElementById("outputResult").textContent;
+  if(!text) return;
+  navigator.clipboard.writeText(text).then(()=&gt;alert("✅ Result copied!")).catch(()=&gt;alert("❌ Failed."));
+}
+
+function toggleDarkMode() { document.body.classList.toggle("dark-mode"); }
+
+let dashboardCities = [...cities];
+
+function renderDashboard(){
+  dashboard.innerHTML="";
+  dashboardCities.forEach((c,index)=&gt;{
+    const now = new Date();
+    const time = new Date(now.toLocaleString("en-US",{timeZone:c.zone}));
+    const card = document.createElement("div");
+    card.className="card";
+    card.innerHTML=`&lt;div class="flag"&gt;${c.flag}&lt;/div&gt;&lt;div class="city-name"&gt;${c.name}&lt;/div&gt;&lt;div class="time" id="time-${index}"&gt;${time.toLocaleTimeString()}&lt;/div&gt;&lt;button class="remove-btn" onclick="removeCity(${index})"&gt;Remove&lt;/button&gt;`;
+    dashboard.appendChild(card);
+  });
+}
+
+function updateDashboardTime(){
+  dashboardCities.forEach((c,index)=&gt;{
+    const now = new Date();
+    const time = new Date(now.toLocaleString("en-US",{timeZone:c.zone}));
+    const timeDiv = document.getElementById(`time-${index}`);
+    if(timeDiv) timeDiv.textContent = time.toLocaleTimeString();
+  });
+}
+
+function removeCity(index){
+  dashboardCities.splice(index,1);
+  renderDashboard();
+}
+
+function sortDashboard(by){
+  if(by==="name") dashboardCities.sort((a,b)=&gt;a.name.localeCompare(b.name));
+  else if(by==="time") dashboardCities.sort((a,b)=&gt;{
+    const tA = new Date(new Date().toLocaleString("en-US",{timeZone:a.zone}));
+    const tB = new Date(new Date().toLocaleString("en-US",{timeZone:b.zone}));
+    return tA-tB;
+  });
+  renderDashboard();
+}
+
+renderDashboard();
+setInterval(updateDashboardTime,1000);</para>
+  </sect1>
+</article>

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<article lang="">
+  <para>🌙 </para>
+  <para>💱 Live Currency Converter</para>
+  <sect1 id="status">
+    <para>Loading currencies...</para>
+  </sect1>
+  <para>Amount </para>
+  <para>From </para>
+  <para>⇄ </para>
+  <para>To </para>
+  <para>Convert </para>
+  <sect1 id="result">
+    <para>—</para>
+  </sect1>
+  <sect1 id="lastUpdated">
+    <para/>
+  </sect1>
+  <sect1>
+    <title>🌐 Live Rates (Base: USD)</title>
+    <para>Auto-updates every 60s</para>
+    <informaltable frame="all">
+      <tgroup cols="1.5"><thead><row><entry><para>Currency</para></entry><entry><para>Rate<anchor id="ratesBody"/></para></entry></row></thead><tbody><row><entry namest="c1" nameend="c2"><para>Loading...</para></entry></row></tbody></tgroup>
+    </informaltable>
+    <para>const API_KEY = "53b1ddab51918842a3a4ebf5e3854dbf";
+const BASE = "https://api.currencylayer.com";
+const SYMBOLS = {USD:"$",EUR:"€",GBP:"£",INR:"₹",PKR:"₨",AED:"د.إ",AUD:"A$",CAD:"C$",CHF:"Fr",JPY:"¥",CNY:"¥",RUB:"₽",KRW:"₩",NGN:"₦",TRY:"₺",SAR:"﷼",ZAR:"R",MXN:"$",HKD:"HK$",SGD:"S$",BDT:"৳"};
+const FLAGS = {USD:"🇺🇸",EUR:"🇪🇺",GBP:"🇬🇧",INR:"🇮🇳",PKR:"🇵🇰",AED:"🇦🇪",AUD:"🇦🇺",CAD:"🇨🇦",CHF:"🇨🇭",JPY:"🇯🇵",CNY:"🇨🇳",RUB:"🇷🇺",KRW:"🇰🇷",NGN:"🇳🇬",TRY:"🇹🇷",SAR:"🇸🇦",ZAR:"🇿🇦",MXN:"🇲🇽",HKD:"🇭🇰",SGD:"🇸🇬",BDT:"🇧🇩"};
+
+const currencyList = {
+  "USD":"US Dollar","EUR":"Euro","GBP":"British Pound","PKR":"Pakistani Rupee","INR":"Indian Rupee",
+  "AED":"UAE Dirham","AFN":"Afghan Afghani","ALL":"Albanian Lek","AMD":"Armenian Dram","ANG":"Netherlands Antillean Guilder",
+  "AOA":"Angolan Kwanza","ARS":"Argentine Peso","AUD":"Australian Dollar","AZN":"Azerbaijani Manat",
+  "BAM":"Bosnia-Herzegovina Convertible Mark","BDT":"Bangladeshi Taka","BHD":"Bahraini Dinar","BND":"Brunei Dollar","BRL":"Brazilian Real",
+  "CAD":"Canadian Dollar","CHF":"Swiss Franc","CLP":"Chilean Peso","CNY":"Chinese Yuan","COP":"Colombian Peso","CZK":"Czech Koruna",
+  "DKK":"Danish Krone","DZD":"Algerian Dinar","EGP":"Egyptian Pound","ETB":"Ethiopian Birr","FJD":"Fijian Dollar","GHS":"Ghanaian Cedi",
+  "HKD":"Hong Kong Dollar","IDR":"Indonesian Rupiah","ILS":"Israeli Shekel","JPY":"Japanese Yen","KES":"Kenyan Shilling","KRW":"South Korean Won",
+  "KWD":"Kuwaiti Dinar","LKR":"Sri Lankan Rupee","MAD":"Moroccan Dirham","MYR":"Malaysian Ringgit","MXN":"Mexican Peso","NGN":"Nigerian Naira",
+  "NOK":"Norwegian Krone","NPR":"Nepalese Rupee","NZD":"New Zealand Dollar","OMR":"Omani Rial","PHP":"Philippine Peso","PLN":"Polish Zloty",
+  "QAR":"Qatari Riyal","RUB":"Russian Ruble","SAR":"Saudi Riyal","SEK":"Swedish Krona","SGD":"Singapore Dollar","THB":"Thai Baht",
+  "TRY":"Turkish Lira","TZS":"Tanzanian Shilling","UAH":"Ukrainian Hryvnia","UGX":"Ugandan Shilling","VND":"Vietnamese Dong","ZAR":"South African Rand"
+};
+
+const fromSel=document.getElementById("fromCurrency"),
+      toSel=document.getElementById("toCurrency"),
+      resultEl=document.getElementById("result"),
+      amountInput=document.getElementById("amount"),
+      ratesBody=document.getElementById("ratesBody"),
+      statusEl=document.getElementById("status"),
+      lastUpdatedEl=document.getElementById("lastUpdated");
+
+let cachedQuotes=null;
+
+function fmt(n){return Number(n).toLocaleString(undefined,{maximumFractionDigits:2});}
+function flag(c){return FLAGS[c]||"🏳️";}
+function sym(c){return SYMBOLS[c]||"";}
+function setStatus(msg,isErr=false){statusEl.textContent=msg;statusEl.classList.toggle("error",isErr);}
+
+function fillSelects(){
+  fromSel.innerHTML=""; toSel.innerHTML="";
+  Object.entries(currencyList).forEach(([c,n])=&gt;{
+    const text=`${flag(c)} ${c} — ${n}`;
+    fromSel.append(new Option(text,c)); toSel.append(new Option(text,c));
+  });
+  fromSel.value="USD"; toSel.value="PKR";
+}
+
+async function loadRates(){
+  setStatus("Fetching live rates...");
+  try{
+    const res=await fetch(`${BASE}/live?access_key=${API_KEY}`);
+    const data=await res.json();
+    if(!data.success) throw new Error(data.error?.info||"Fetch failed");
+    cachedQuotes=data.quotes;
+    const t=new Date(data.timestamp*1000);
+    lastUpdatedEl.textContent="Last updated: "+t.toLocaleString();
+    updateRatesTable();
+    setStatus("✅ Rates updated");
+  }catch{
+    setStatus("⚠️ Using cached or fallback rates",true);
+  }
+}
+
+function updateRatesTable(){
+  if(!cachedQuotes){ratesBody.innerHTML="&lt;tr&gt;&lt;td colspan='2'&gt;No data&lt;/td&gt;&lt;/tr&gt;";return;}
+  ratesBody.innerHTML="";
+  Object.entries(cachedQuotes).sort().forEach(([pair,val])=&gt;{
+    const code=pair.replace("USD","");
+    ratesBody.innerHTML+=`&lt;tr&gt;&lt;td&gt;${flag(code)} ${code}&lt;/td&gt;&lt;td&gt;${fmt(val)}&lt;/td&gt;&lt;/tr&gt;`;
+  });
+}
+
+function convert(){
+  const amt=parseFloat(amountInput.value);
+  const from=fromSel.value,to=toSel.value;
+  if(!amt||amt&lt;=0){resultEl.textContent="⚠️ Enter valid amount";return;}
+  if(!cachedQuotes){resultEl.textContent="⚠️ Rates not loaded yet";return;}
+  const usdFrom=cachedQuotes["USD"+from],usdTo=cachedQuotes["USD"+to];
+  if(!usdFrom||!usdTo){resultEl.textContent="❌ Conversion unavailable";return;}
+  const val=(amt/usdFrom)*usdTo;
+  resultEl.innerHTML=`${flag(from)} ${sym(from)}${fmt(amt)} ${from} =&lt;br&gt;${flag(to)} ${sym(to)}${fmt(val)} ${to}`;
+}
+
+document.getElementById("convertBtn").onclick=convert;
+document.getElementById("swapBtn").onclick=()=&gt;{const t=fromSel.value;fromSel.value=toSel.value;toSel.value=t;};
+
+// Theme toggle logic
+const themeBtn=document.getElementById("themeToggle");
+function setTheme(dark){
+  document.body.classList.toggle("dark",dark);
+  themeBtn.textContent=dark?"☀️":"🌙";
+  localStorage.setItem("theme",dark?"dark":"light");
+}
+themeBtn.onclick=()=&gt;setTheme(!document.body.classList.contains("dark"));
+if(localStorage.getItem("theme")==="dark"||window.matchMedia("(prefers-color-scheme: dark)").matches){setTheme(true);}else{setTheme(false);}
+
+fillSelects();
+loadRates();
+setInterval(loadRates,60000);</para>
+  </sect1>
+</article>

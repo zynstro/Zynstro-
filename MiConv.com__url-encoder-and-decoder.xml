@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<article lang="">
+  <sect1>
+    <title>🔗 Advanced URL Encoder / Decoder</title>
+    <para>Input Text / URL: </para>
+    <sect1 id="urlInput">
+      <para/>
+    </sect1>
+    <para>Encode URL Decode URL Clear All Swap (Result to Input) </para>
+    <para>Result (Click to Copy): </para>
+    <sect1 id="resultBox">
+      <para/>
+    </sect1>
+    <sect1 id="message">
+      <para/>
+    </sect1>
+    <para>    const urlInput = document.getElementById("urlInput");
+    const resultBox = document.getElementById("resultBox");
+    const message = document.getElementById("message");
+
+    /** Clears the message area after a delay. */
+    function clearMessageAfterDelay() {
+        setTimeout(() =&gt; {
+            message.innerText = '';
+            message.className = '';
+        }, 3000);
+    }
+
+    /** Encodes the input text using encodeURIComponent. */
+    function encodeURL() {
+      const input = urlInput.innerText.trim();
+      if (!input) {
+        resultBox.innerText = '';
+        message.innerText = "⚠️ Input is empty. Nothing to encode.";
+        message.className = 'error';
+        clearMessageAfterDelay();
+        return;
+      }
+      try {
+        const encoded = encodeURIComponent(input);
+        resultBox.innerText = encoded;
+        message.innerText = "✅ Successfully Encoded!";
+        message.className = 'success';
+      } catch (e) {
+        resultBox.innerText = '';
+        message.innerText = "❌ Error during encoding.";
+        message.className = 'error';
+      }
+      clearMessageAfterDelay();
+    }
+
+    /** Decodes the input text using decodeURIComponent. */
+    function decodeURL() {
+      const input = urlInput.innerText.trim();
+       if (!input) {
+        resultBox.innerText = '';
+        message.innerText = "⚠️ Input is empty. Nothing to decode.";
+        message.className = 'error';
+        clearMessageAfterDelay();
+        return;
+      }
+      try {
+        // We use the same function for both, assuming the user swaps the content
+        const decoded = decodeURIComponent(input);
+        resultBox.innerText = decoded;
+        message.innerText = "✅ Successfully Decoded!";
+        message.className = 'success';
+      } catch (e) {
+        resultBox.innerText = '';
+        message.innerText = "❌ Invalid encoded sequence found. Could not decode.";
+        message.className = 'error';
+      }
+      clearMessageAfterDelay();
+    }
+    
+    /** Clears both the input and result boxes. */
+    function clearInputAndResult() {
+        urlInput.innerText = '';
+        resultBox.innerText = '';
+        message.innerText = "🗑️ Input and Result cleared.";
+        message.className = '';
+        clearMessageAfterDelay();
+    }
+
+    /** Swaps the content from the result box to the input box. */
+    function copyToInput() {
+        const result = resultBox.innerText.trim();
+        if (result) {
+            urlInput.innerText = result;
+            resultBox.innerText = ''; // Clear result after swapping
+            message.innerText = "🔄 Result moved to Input.";
+            message.className = '';
+        } else {
+            message.innerText = "⚠️ Result is empty. Nothing to swap.";
+            message.className = 'error';
+        }
+        clearMessageAfterDelay();
+    }
+
+    /** Copies the content of the result box to the clipboard. */
+    async function copyResult() {
+      const textToCopy = resultBox.innerText.trim();
+      if (!textToCopy) {
+        message.innerText = "⚠️ Result is empty. Nothing to copy.";
+        message.className = 'error';
+        clearMessageAfterDelay();
+        return;
+      }
+
+      try {
+        // Use the modern clipboard API
+        await navigator.clipboard.writeText(textToCopy);
+        message.innerText = "📋 Result copied to clipboard!";
+        message.className = 'success';
+      } catch (err) {
+        // Fallback for older browsers or failed clipboard access
+        console.error('Could not copy text: ', err);
+        message.innerText = "❌ Failed to copy (check console for error).";
+        message.className = 'error';
+      }
+      clearMessageAfterDelay();
+    }
+  </para>
+  </sect1>
+</article>
